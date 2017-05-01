@@ -44,10 +44,12 @@ target_link_libraries(move_base
     )
 add_dependencies(move_base move_base_gencfg)
 add_dependencies(move_base geometry_msgs_generate_messages_cpp)
+target_compile_features(move_base PRIVATE cxx_nullptr)
 
 add_executable(move_base_node
   src/move_base_node.cpp
 )
+target_compile_features(move_base_node PRIVATE cxx_nullptr)
 target_link_libraries(move_base_node move_base)
 set_target_properties(move_base_node PROPERTIES OUTPUT_NAME move_base)
 
