@@ -49,8 +49,6 @@ namespace move_base {
     tf_(tf),
     as_(NULL),
     planner_costmap_ros_(NULL), controller_costmap_ros_(NULL),
-    //bgp_loader_("nav_core", "nav_core::BaseGlobalPlanner"),
-    //blp_loader_("nav_core", "nav_core::BaseLocalPlanner"),
     bgp_loader_(nullptr),
     blp_loader_(nullptr),
     recovery_loader_("nav_core", "nav_core::RecoveryBehavior"),
@@ -81,7 +79,6 @@ namespace move_base {
     private_nh.param("controller_frequency", controller_frequency_, 20.0);
     private_nh.param("planner_patience", planner_patience_, 5.0);
     private_nh.param("controller_patience", controller_patience_, 15.0);
-    private_nh.param("max_planning_retries", max_planning_retries_, -1);  // disabled by default
 
     private_nh.param("oscillation_timeout", oscillation_timeout_, 0.0);
     private_nh.param("oscillation_distance", oscillation_distance_, 0.5);
@@ -227,7 +224,6 @@ namespace move_base {
 
     planner_patience_ = config.planner_patience;
     controller_patience_ = config.controller_patience;
-    max_planning_retries_ = config.max_planning_retries;
     conservative_reset_dist_ = config.conservative_reset_dist;
 
     recovery_behavior_enabled_ = config.recovery_behavior_enabled;

@@ -202,8 +202,6 @@ namespace move_base {
 
       ros::Time last_valid_plan_, last_valid_control_, last_oscillation_reset_;
       geometry_msgs::PoseStamped oscillation_pose_;
-      //pluginlib::ClassLoader<nav_core::BaseGlobalPlanner> bgp_loader_;
-      //pluginlib::ClassLoader<nav_core::BaseLocalPlanner> blp_loader_;
       using GpClassLoader = pluginlib::ClassLoader<nav_core::BaseGlobalPlanner>;
       using LpClassLoader = pluginlib::ClassLoader<nav_core::BaseLocalPlanner>;
       std::unique_ptr<GpClassLoader> bgp_loader_;
