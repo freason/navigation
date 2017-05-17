@@ -134,6 +134,8 @@ void VoxelLayer::updateBounds(double robot_x, double robot_y, double robot_yaw, 
   // update the global current status
   current_ = current;
 
+  resetMaps();
+
   // raytrace freespace
   for (unsigned int i = 0; i < clearing_observations.size(); ++i)
   {
