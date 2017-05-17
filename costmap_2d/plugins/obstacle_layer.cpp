@@ -437,7 +437,8 @@ void ObstacleLayer::updateCosts(costmap_2d::Costmap2D& master_grid, int min_i, i
   switch (combination_method_)
   {
     case 0:  // Overwrite
-      updateWithOverwrite(master_grid, min_i, min_j, max_i, max_j);
+      // updateWithOverwrite(master_grid, min_i, min_j, max_i, max_j);
+      updateWithTrueOverwrite(master_grid, min_i, min_j, max_i, max_j);
       break;
     case 1:  // Maximum
       updateWithMax(master_grid, min_i, min_j, max_i, max_j);
