@@ -638,6 +638,10 @@ namespace move_base {
           lock.unlock();
         }
       }
+      else
+      {
+        runPlanner_ = false;
+      }
 
       //take the mutex for the next iteration
       lock.lock();
