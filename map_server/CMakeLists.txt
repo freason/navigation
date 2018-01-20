@@ -4,10 +4,11 @@ project(map_server)
 find_package(catkin REQUIRED
         COMPONENTS
             roscpp
-            tf
             nav_msgs
+            tf2
         )
 
+find_package(Bullet REQUIRED)
 find_package(SDL REQUIRED)
 find_package(SDL_image REQUIRED)
 
@@ -20,20 +21,17 @@ endif()
 catkin_package(
     INCLUDE_DIRS
         include
-        ${SDL_INCLUDE_DIR}
-        ${SDL_IMAGE_INCLUDE_DIRS}
     LIBRARIES
         map_server_image_loader
-        ${SDL_LIBRARY}
-        ${SDL_IMAGE_LIBRARIES}
     CATKIN_DEPENDS
         roscpp
-        tf
         nav_msgs
+        tf2
 )
 
 include_directories(
     include
+    ${BULLET_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
     ${SDL_INCLUDE_DIR}
     ${SDL_IMAGE_INCLUDE_DIRS}
@@ -41,13 +39,16 @@ include_directories(
 )
 
 add_library(map_server_image_loader src/image_loader.cpp)
+add_dependencies(map_server_image_loader ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(map_server_image_loader
+    ${BULLET_LIBRARIES}
     ${catkin_LIBRARIES}
     ${SDL_LIBRARY}
     ${SDL_IMAGE_LIBRARIES}
 )
 
 add_executable(map_server src/main.cpp)
+add_dependencies(map_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(map_server
     map_server_image_loader
     ${YAMLCPP_LIBRARIES}
@@ -55,6 +56,7 @@ target_link_libraries(map_server
 )
 
 add_executable(map_server-map_saver src/map_saver.cpp)
+add_dependencies(map_server-map_saver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 set_target_properties(map_server-map_saver PROPERTIES OUTPUT_NAME map_saver)
 target_link_libraries(map_server-map_saver
     ${catkin_LIBRARIES}
@@ -81,14 +83,14 @@ if(CATKIN_ENABLE_TESTING)
   )
 
   add_executable(rtest test/rtest.cpp test/test_constants.cpp)
+  add_dependencies(rtest ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
   target_link_libraries( rtest
       gtest
       ${catkin_LIBRARIES}
   )
-  add_dependencies(rtest nav_msgs_generate_messages_cpp)
 
   # This has to be done after we've already built targets, or catkin variables get borked
-  find_package(rostest)
+  find_package(rostest REQUIRED)
   add_rostest(test/rtest.xml)
 endif()
 
