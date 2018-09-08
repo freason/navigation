@@ -651,6 +651,10 @@ namespace move_base {
           lock.unlock();
         }
       }
+      else
+      {
+        runPlanner_ = false;
+      }
 
       //take the mutex for the next iteration
       lock.lock();
@@ -677,6 +681,7 @@ namespace move_base {
     {
       as_->setSucceeded(move_base_msgs::MoveBaseResult(), "Goal canceled");
       tc_->setPlan(std::vector<geometry_msgs::PoseStamped>());
+      old_goal_ = std::move(decltype(old_goal_)());
       return;
     }
 
@@ -717,6 +722,7 @@ namespace move_base {
       }
 
       if(as_->isPreemptRequested()){
+        old_goal_ = std::move(decltype(old_goal_)());
         if(as_->isNewGoalAvailable()){
           //if we're active and a new goal is available, we'll accept it, but we won't shut anything down
           move_base_msgs::MoveBaseGoal new_goal = *as_->acceptNewGoal();
