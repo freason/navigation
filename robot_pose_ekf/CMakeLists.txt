@@ -81,18 +81,22 @@ include(CMakeDetermineSystem)
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 if(CATKIN_ENABLE_TESTING)
 
+find_package(rostest REQUIRED)
+
+include_directories(${GTEST_INCLUDE_DIRS})
+
 catkin_download_test_data(
   download_data_ekf_test2_indexed.bag
   http://download.ros.org/data/robot_pose_ekf/ekf_test2_indexed.bag
   DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
   MD5 71addef0ed900e05b301e0b4fdca99e2
 )
-add_executable(test_robot_pose_ekf test/test_robot_pose_ekf.cpp)
+catkin_add_gtest(test_robot_pose_ekf test/test_robot_pose_ekf.cpp)
 target_link_libraries(test_robot_pose_ekf
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
     ${BFL_LIBRARIES}
-    gtest
+    ${GTEST_LIBRARIES}
     )
 add_dependencies(test_robot_pose_ekf ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -102,12 +106,12 @@ catkin_download_test_data(
   DESTINATION ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_SHARE_DESTINATION}/test
   MD5 1f1f4e361a9e0b0f6b1379b2dd011088
 )
-add_executable(test_robot_pose_ekf_zero_covariance test/test_robot_pose_ekf_zero_covariance.cpp)
+catkin_add_gtest(test_robot_pose_ekf_zero_covariance test/test_robot_pose_ekf_zero_covariance.cpp)
 target_link_libraries(test_robot_pose_ekf_zero_covariance
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
     ${BFL_LIBRARIES}
-    gtest
+    ${GTEST_LIBRARIES}
     )
 add_dependencies(test_robot_pose_ekf_zero_covariance ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 

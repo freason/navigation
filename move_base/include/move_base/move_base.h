@@ -39,6 +39,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <ros/ros.h>
 
@@ -203,8 +204,10 @@ namespace move_base {
 
       ros::Time last_valid_plan_, last_valid_control_, last_oscillation_reset_;
       geometry_msgs::PoseStamped oscillation_pose_;
-      pluginlib::ClassLoader<nav_core::BaseGlobalPlanner> bgp_loader_;
-      pluginlib::ClassLoader<nav_core::BaseLocalPlanner> blp_loader_;
+      using GpClassLoader = pluginlib::ClassLoader<nav_core::BaseGlobalPlanner>;
+      using LpClassLoader = pluginlib::ClassLoader<nav_core::BaseLocalPlanner>;
+      std::unique_ptr<GpClassLoader> bgp_loader_;
+      std::unique_ptr<LpClassLoader> blp_loader_;
       pluginlib::ClassLoader<nav_core::RecoveryBehavior> recovery_loader_;
 
       //set up plan triple buffer
@@ -217,6 +220,7 @@ namespace move_base {
       boost::recursive_mutex planner_mutex_;
       boost::condition_variable_any planner_cond_;
       geometry_msgs::PoseStamped planner_goal_;
+      std::vector<geometry_msgs::PoseStamped> proposed_plan_;
       boost::thread* planner_thread_;
 
 
@@ -229,6 +233,9 @@ namespace move_base {
       move_base::MoveBaseConfig default_config_;
       bool setup_, p_freq_change_, c_freq_change_;
       bool new_global_plan_;
+
+      geometry_msgs::PoseStamped old_goal_;
+      bool need_new_global_plan_;
   };
 };
 #endif
