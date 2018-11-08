@@ -672,16 +672,17 @@ namespace move_base {
 
   void MoveBase::executeCb(const move_base_msgs::MoveBaseGoalConstPtr& move_base_goal)
   {
-    if(!isQuaternionValid(move_base_goal->target_pose.pose.orientation)){
-      as_->setAborted(move_base_msgs::MoveBaseResult(), "Aborting on goal because it was sent with an invalid quaternion");
-      return;
-    }
-
     if (move_base_goal->cancel)
     {
+      ROS_INFO("MoveBase{Cancel goal 0}");
       as_->setSucceeded(move_base_msgs::MoveBaseResult(), "Goal canceled");
       tc_->setPlan(std::vector<geometry_msgs::PoseStamped>());
       old_goal_ = std::move(decltype(old_goal_)());
+      return;
+    }
+
+    if(!isQuaternionValid(move_base_goal->target_pose.pose.orientation)){
+      as_->setAborted(move_base_msgs::MoveBaseResult(), "Aborting on goal because it was sent with an invalid quaternion");
       return;
     }
 
@@ -726,6 +727,15 @@ namespace move_base {
         if(as_->isNewGoalAvailable()){
           //if we're active and a new goal is available, we'll accept it, but we won't shut anything down
           move_base_msgs::MoveBaseGoal new_goal = *as_->acceptNewGoal();
+
+          if (new_goal.cancel)
+          {
+            ROS_INFO("MoveBase{Cancel goal 1}");
+            as_->setSucceeded(move_base_msgs::MoveBaseResult(), "Goal canceled");
+            tc_->setPlan(std::vector<geometry_msgs::PoseStamped>());
+            old_goal_ = std::move(decltype(old_goal_)());
+            return;
+          }
 
           if(!isQuaternionValid(new_goal.target_pose.pose.orientation)){
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Aborting on goal because it was sent with an invalid quaternion");
@@ -1172,6 +1182,7 @@ namespace move_base {
     state_ = PLANNING;
     recovery_index_ = 0;
     recovery_trigger_ = PLANNING_R;
+    tc_->setPlan(std::vector<geometry_msgs::PoseStamped>());
     publishZeroVelocity();
 
     //if we shutdown our costmaps when we're deactivated... we'll do that now
